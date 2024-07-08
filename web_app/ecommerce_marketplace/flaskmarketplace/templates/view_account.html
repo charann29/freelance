@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container text-center mt-3">
+    <H1>Viewing user {{ user.username }}</H1>
+    <h3>Location: {{ user.city }}</h3>
+    {% if products %}
+        {% for batch in products|batch(3) %}
+            <div class="row align-items-start mt-5">
+                <h3>Listed products:</h3>
+                {% for product in batch %}
+                    <div class="col">
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{ url_for('static', filename='product_pics/' + product.image) }}" class="card-img-top" height="220" width="150" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.title }}</h5>
+                                <p class="card-text">$ {{ product.price }}</p>
+                                {% if current_user.user_id==product.user_id %}
+                                    <a href="{{ url_for('edit_product',product=product.product_id) }}" class="btn btn-primary">Edit</a>
+                                    <a href="{{ url_for('delete_product',product=product.product_id) }}" class="btn btn-danger">Delete product</a>
+                                {% else %}
+                                    <a href="#" class="btn btn-primary">Buy now</a>
+                                    <a href="#" class="btn btn-primary">Add to cart</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <h3>This user has no products listed</h3>
+    {% endif %}
+</div>
+{% endblock content %}

@@ -1,0 +1,156 @@
+CREATE DATABASE IF NOT EXISTS flaskmarketdb;
+USE flaskmarketdb;
+
+CREATE TABLE IF NOT EXISTS user (
+    user_id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(45) NOT NULL,
+    password VARCHAR(60) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    image VARCHAR(255) NOT NULL DEFAULT 'default.jpg',
+    balance FLOAT NULL DEFAULT 1000,
+    role ENUM('user', 'admin') NULL DEFAULT 'user',
+    location VARCHAR(255) NULL DEFAULT NULL,
+    PRIMARY KEY (user_id),
+    UNIQUE INDEX username (username),
+    UNIQUE INDEX email (email),
+    INDEX idx_user_location (location)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS product (
+    product_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    image TEXT NULL DEFAULT NULL,
+    description TEXT NULL DEFAULT NULL,
+    price FLOAT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    category ENUM('Phones', 'Laptops', 'Gadgets', 'Other') NULL DEFAULT 'Other',
+    user_name VARCHAR(255) NULL DEFAULT NULL,
+    avg_review FLOAT NULL DEFAULT NULL,
+    location VARCHAR(255) NULL DEFAULT NULL,
+    PRIMARY KEY (product_id),
+    INDEX user_id (user_id),
+    INDEX user_name (user_name),
+    INDEX fk_product_user_location (location),
+    CONSTRAINT fk_product_user_location FOREIGN KEY (location) REFERENCES user(location),
+    CONSTRAINT product_ibfk_1 FOREIGN KEY (user_id) REFERENCES user(user_id),
+    CONSTRAINT product_ibfk_2 FOREIGN KEY (user_name) REFERENCES user(username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS cart (
+    id INT NOT NULL AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    user_id INT NOT NULL,
+    PRIMARY KEY (id),
+    INDEX product_id (product_id),
+    INDEX user_id (user_id),
+    CONSTRAINT cart_ibfk_1 FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE,
+    CONSTRAINT cart_ibfk_2 FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS comment (
+    comment_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    product_id INT NOT NULL,
+    username VARCHAR(255) NULL DEFAULT NULL,
+    PRIMARY KEY (comment_id),
+    INDEX product_id (product_id),
+    INDEX user_id (user_id),
+    CONSTRAINT comment_ibfk_1 FOREIGN KEY (product_id) REFERENCES product(product_id),
+    CONSTRAINT comment_ibfk_2 FOREIGN KEY (user_id) REFERENCES user(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS review (
+    review_id INT NOT NULL AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    user_id INT NOT NULL,
+    rating INT NOT NULL,
+    created_at DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+    username VARCHAR(255) NULL DEFAULT NULL,
+    PRIMARY KEY (review_id),
+    INDEX product_id (product_id),
+    INDEX user_id (user_id),
+    CONSTRAINT review_ibfk_1 FOREIGN KEY (product_id) REFERENCES product(product_id),
+    CONSTRAINT review_ibfk_2 FOREIGN KEY (user_id) REFERENCES user(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DELIMITER $$
+
+CREATE TRIGGER before_product_insert
+BEFORE INSERT ON product FOR EACH ROW
+BEGIN
+    DECLARE user_name_var VARCHAR(255);
+    SELECT username INTO user_name_var FROM user WHERE user_id = NEW.user_id;
+    SET NEW.user_name = user_name_var;
+END$$
+
+CREATE TRIGGER trigger_populate_product_location
+BEFORE INSERT ON product FOR EACH ROW
+BEGIN
+    DECLARE user_location VARCHAR(255);
+    SELECT location INTO user_location FROM user WHERE user_id = NEW.user_id;
+    SET NEW.location = user_location;
+END$$
+
+CREATE TRIGGER before_comment_insert
+BEFORE INSERT ON comment FOR EACH ROW
+BEGIN
+    DECLARE user_name VARCHAR(255);
+    SELECT username INTO user_name FROM user WHERE user_id = NEW.user_id;
+    SET NEW.username = user_name;
+END$$
+
+CREATE TRIGGER before_review_insert
+BEFORE INSERT ON review FOR EACH ROW
+BEGIN
+    DECLARE user_name VARCHAR(255);
+    SELECT username INTO user_name FROM user WHERE user_id = NEW.user_id;
+    SET NEW.username = user_name;
+END$$
+
+CREATE TRIGGER update_avg_review
+AFTER INSERT ON review FOR EACH ROW
+BEGIN
+    UPDATE product
+    SET avg_review = (
+        SELECT AVG(rating) FROM review WHERE product_id = NEW.product_id
+    )
+    WHERE product_id = NEW.product_id;
+END$$
+
+DELIMITER ;
+
+show create table product;
+
+INSERT INTO user (user_id, username, password, email, city, location)
+VALUES (1, "seller 1", "password","examplemail@mail.com","Sarajevo","Sarajevo"),
+(2, "seller 2", "password", "examplemail2@gmail.com","Tuzla","Tuzla"),
+(3, "seller 3", "passwprd", "examplemail3@mail.com","Sarajevo","Sarajevo");
+
+
+INSERT INTO product (product_id, user_id, title, image, description, price, category)
+VALUES (1, 1, "iPhone", "iphone.jpg","This is a test iphone", 599, "Phones"),
+(2,1,"Laptop","laptop.jpg","This is a test laptop",1400,"Laptops"),
+(3,2, "BMW M5","bmw.jpg","This is my dream",17000,"Other"),
+(4,2,"Mercedec CLS 63 AMG","mercedes.jpg","This is a test car", 82200, "Other"),
+(5,3, "Phone case","case.jpg","This is an example product",15, "Other"),
+(6,3,"Sky","sky.jpg","This is a nice picture of the sky",999, "Other");
+
+
+INSERT INTO review (product_id, user_id, rating)
+VALUES (1,2,5),
+(1,3,4),
+(2,1,4),
+(2,3,4),
+(3,1,5),
+(3,2,3);
+
+
+INSERT INTO comment (user_id, content, product_id)
+VALUES (1, "test comment",2),
+(2, "comment",3),
+(3,"this is a comment",1);
+

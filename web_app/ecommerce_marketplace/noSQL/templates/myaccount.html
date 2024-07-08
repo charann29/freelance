@@ -1,0 +1,162 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+      <div class="row justify-content-md-center">
+        <div class="col-12 col-md-11 col-lg-8 col-xl-7 col-xxl-6">
+          <div class="bg-white p-4 p-md-5 rounded shadow-sm">
+            <div class="row">
+              <div class="col-12">
+                <div class="text-center mb-5">
+                  <h2>
+                    Edit your account details
+                  </h2>
+                  <figure class="figure">
+                    <img src="{{ url_for('static', filename='profile_pics/' + current_user.image) }}" class="card-img-top" alt="No image" height="220" width="150">
+                    <figcaption class="figure-caption">Current profile picture</figcaption>
+                    </figure>
+                  
+                </div>
+              </div>
+            </div>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+              <div class="row gy-3 gy-md-4 overflow-hidden">
+                <div class="col-12">
+                  <label for="email" class="form-label">{{ form.email.label }}</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                      </svg>
+                    </span>
+                    {% if form.email.errors %}
+                    {{ form.email(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                 </div>
+                </div>
+                <div class="col-12">
+                    <label for="email" class="form-label">{{ form.username.label }}</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                          </svg>
+                          
+                      </span>
+                      {% if form.username.errors %}
+                      {{ form.username(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.username.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                      {% else %}
+                          {{ form.username(class="form-control form-control-lg") }}
+                      {% endif %}
+                   </div>
+                  </div>
+                 
+                <div class="col-12">
+                    <label for="password" class="form-label">{{ form.city.label }}</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mailbox-flag" viewBox="0 0 16 16">
+                            <path d="M10.5 8.5V3.707l.854-.853A.5.5 0 0 0 11.5 2.5v-2A.5.5 0 0 0 11 0H9.5a.5.5 0 0 0-.5.5v8zM5 7c0 .334-.164.264-.415.157C4.42 7.087 4.218 7 4 7s-.42.086-.585.157C3.164 7.264 3 7.334 3 7a1 1 0 0 1 2 0"/>
+                            <path d="M4 3h4v1H6.646A4 4 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3V3a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3"/>
+                        </svg>
+                      </span>
+                      
+                      {% if form.city.errors %}
+                      {{ form.city(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.city.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                      {% else %}
+                          {{ form.city(class="form-control form-control-lg") }}
+                      {% endif %}
+  
+                    </div>
+                  </div>
+                
+                  <div class="col-12">
+                    <label for="password" class="form-label">{{ form.image.label }}</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mailbox-flag" viewBox="0 0 16 16">
+                            <path d="M10.5 8.5V3.707l.854-.853A.5.5 0 0 0 11.5 2.5v-2A.5.5 0 0 0 11 0H9.5a.5.5 0 0 0-.5.5v8zM5 7c0 .334-.164.264-.415.157C4.42 7.087 4.218 7 4 7s-.42.086-.585.157C3.164 7.264 3 7.334 3 7a1 1 0 0 1 2 0"/>
+                            <path d="M4 3h4v1H6.646A4 4 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3V3a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3"/>
+                        </svg>
+                      </span>
+                      
+                      {% if form.image.errors %}
+                      {{ form.image(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.image.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                      {% else %}
+                          {{ form.image(class="form-control form-control-lg") }}
+                      {% endif %}
+  
+                    </div>
+                  </div>
+                
+                <div class="col-12">
+                  <div class="d-grid">
+                  <!--  <button class="btn btn-primary btn-lg" type="submit">Apply changes</button>
+                    -->{{ form.submit(class="btn btn-primary btn-lg") }}
+                  </div>
+                  <div class="d-grid">
+                    <a href="{{ url_for('delete_account') }}" class="btn btn-danger btn-lg mt-2">Delete account</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+
+
+  <div class="container text-center mt-5">
+    {% if products %}
+    <h3>My products</h3>
+        {% for batch in products|batch(3) %}
+            <div class="row align-items-start mt-5">
+                {% for product in batch %}
+                    <div class="col">
+                      <div class="card-deck">
+                        <div class="card" style="width: 18rem;">
+                          <a href="{{ url_for('view_product', product_id=product.product_id) }}"><img src="{{ url_for('static', filename='product_pics/' + product.image) }}" class="card-img-top" alt="No image" height="220" width="150"></a>
+                            <div class="card-body">
+                              <a href="{{ url_for('view_product', product_id=product.product_id) }}" class="text-decoration-none"><h5 class="card-title">{{ product.title }}</h5></a>
+                                <p class="card-text">price: {{ product.price }}</p>
+                                <a href="{{ url_for('edit_product',product=product.product_id) }}" class="btn btn-primary">Edit product</a>
+                                <a href="{{ url_for('delete_product',product=product.product_id) }}" class="btn btn-danger">Delete product</a>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <h3>You have no products listed</h3>
+    {% endif %}
+</div>
+</div>
+{% endblock content %}

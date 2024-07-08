@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block search %}
+<div class="container mt-2">
+    <form  method="POST" action="{{ url_for('search') }}">
+        {{ form.hidden_tag() }}
+        <div class="input-group">
+        <input type="search" class="form-control" placeholder="Search for a product" name="searched"  aria-label="Search" aria-describedby="search-addon">
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit"><i class="fas fa-search">Search</i></button>
+        </div>
+        </div>
+    </form>
+</div>
+<div class="container mt-2">
+    <div class="row align-items-center">
+        <div class="col-sm-auto"><h4 class="mb-0" style="font-weight: 400;">Order by:</h4></div>
+        <div class="col-sm">
+            <form method="POST" class="d-flex">
+                {{ form.hidden_tag() }}
+                <div class="form-group me-3 mb-0">
+                    <select class="form-control form-control-sm" id="autoSizingSelect" name="order_by">
+                        <option value="order_by">Newest to oldest</option>
+                        
+                        {% for choice in form.order_by.choices %}
+                            <option value="{{ choice }}">{{ choice }}</option>
+                        {% endfor %}
+                        
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock search %}
+
+{% block content %}
+
+
+
+<div class="container text-center ">
+    {% for batch in products|batch(3) %}
+        <div class="row align-items-start mt-4">
+            {% for product in batch %}
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <a href="{{ url_for('view_product', product_id=product.product_id) }}"><img src="{{ url_for('static', filename='product_pics/' + product.image) }}" class="card-img-top" alt="No image" height="220" width="150"></a>
+                        <div class="card-body">
+                            <a href="{{ url_for('view_product', product_id=product.product_id) }}" class="text-decoration-none"><h5 class="card-title">{{ product.title }}</h5></a>
+                            <p class="card-text">$ {{ product.price }}</p>
+                            <p class="card-text">Posted by: <a href="{{ url_for('view_account',user_id=product.user_id) }}" class="text-decoration-none">{{ product.user_name}}</a></p>
+                            {% if product.avg_review %}
+                                <p class="card-text">Average review: {{ product.avg_review }}&#11088;</p>
+                            {% else %}
+                                <p class="text-muted">No reviews</p>
+                            {% endif %}
+                            <p class="card-text"> <small class="text-muted">Location: {{ product.location }}</small></p>
+                            {% if current_user.user_id==product.user_id %}
+                                <a href="{{ url_for('edit_product',product=product.product_id) }}" class="btn btn-primary">Edit</a>
+                                <a href="{{ url_for('delete_product',product=product.product_id) }}" class="btn btn-danger">Delete product</a>
+                            {% else %}
+                                <a href="{{ url_for('buy_product',product_id=product.product_id) }}" class="btn btn-primary">Buy now</a>
+                                <a href="{{ url_for('add_to_cart',product_id=product.product_id) }}" class="btn btn-primary">Add to cart</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <div class="row">
+        <div class="col-center mt-5">
+    
+        {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+              {% if page_num %}
+                {% if products.page == page_num %}
+                  <a class="btn-sm btn-outline-info mb-2" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+                {% else %}
+                  <a class="btn-sm btn-outline-info mb-2" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+              {% else %}
+                ...
+              {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
